@@ -84,16 +84,7 @@
         <input type="number" id="feeAmount" placeholder="যেমনঃ 150" min="1" required style="max-width:220px;">
       </div>
 
-      <!--<div class="field">
-        <label>আবেদনপত্র আপলোড করুন (PDF) <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
-        <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
-          <i class="fa-solid fa-file-arrow-up"></i>
-          <div>ফাইল নির্বাচন করতে ক্লিক করুন অথবা ড্র্যাগ করে ছাড়ুন</div>
-          <div class="hint">শুধুমাত্র PDF, সর্বোচ্চ 8MB</div>
-          <div class="fname" id="fileNameShow"></div>
-        </div>
-        <input type="file" id="fileInput" accept="application/pdf">
-      </div> --> 
+       
 
       <div class="divider">পেমেন্ট তথ্য</div>
 
@@ -248,7 +239,7 @@ document.getElementById('paymentForm').addEventListener('submit', async function
 
   if(!fee || !sender || !trx){ showError('অনুগ্রহ করে সকল আবশ্যক ঘর পূরণ করুন।'); return; }
   if(!/^01[0-9]{9}$/.test(sender)){ showError('প্রেরকের নম্বরটি সঠিক ফরম্যাটে দিন।'); return; }
-  if(!uploadedFile){ showError('আবেদনপত্রের PDF ফাইল আপলোড করুন।'); return; }
+ 
 
   const btn = document.getElementById('submitBtn');
   btn.disabled = true;
