@@ -30,7 +30,7 @@ window.MahinFirebaseReady = (async function initFirebase() {
 
   window.auth = firebase.auth();
   window.db = firebase.firestore();
-  window.storage = firebase.storage();
+  window.storage = (typeof firebase.storage === "function") ? firebase.storage() : null;
 
   return true;
 })();
