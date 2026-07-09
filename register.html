@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>রেজিস্ট্রেশন — মাহিন সার্ভিস</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-logo">
+    <div class="brand-mark"></div>
+    <div class="name">মাহিন সার্ভিস</div>
+    <div class="slogan">By Mahin</div>
+  </div>
+
+  <div class="card">
+    <h2><i class="fa-solid fa-user-plus"></i> নতুন অ্যাকাউন্ট তৈরি করুন</h2>
+    <div class="sub">একবার রেজিস্ট্রেশন করলে পরবর্তী প্রতিটি আবেদনে আপনার তথ্য স্বয়ংক্রিয়ভাবে পূরণ হয়ে যাবে।</div>
+
+    <div class="error-msg" id="errMsg"></div>
+    <div class="ok-msg" id="okMsg"></div>
+
+    <form id="regForm">
+      <div class="field">
+        <label>আপনার নাম <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+        <input type="text" id="name" placeholder="যেমনঃ মাহিনুর রহমান" required>
+      </div>
+      <div class="field">
+        <label>ফোন নম্বর <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+        <input type="tel" id="phone" placeholder="01XXXXXXXXX" maxlength="11" required>
+      </div>
+      <div class="field">
+        <label>ইমেইল <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+        <input type="email" id="email" placeholder="you@example.com" required>
+      </div>
+      <div class="grid2">
+        <div class="field">
+          <label>পাসওয়ার্ড <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+          <input type="password" id="password" placeholder="কমপক্ষে ৬ অক্ষর" required minlength="6">
+        </div>
+        <div class="field">
+          <label>পাসওয়ার্ড নিশ্চিত করুন <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+          <input type="password" id="password2" placeholder="আবার লিখুন" required minlength="6">
+        </div>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn"><i class="fa-solid fa-user-plus"></i> রেজিস্ট্রেশন করুন</button>
+    </form>
+
+    <div class="link-line">ইতিমধ্যে অ্যাকাউন্ট আছে? <a href="login.html">লগইন করুন</a></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg"></span></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script>
+function showErr(msg){ const e=document.getElementById('errMsg'); e.textContent=msg; e.style.display='block'; document.getElementById('okMsg').style.display='none'; }
+function hideMsgs(){ document.getElementById('errMsg').style.display='none'; document.getElementById('okMsg').style.display='none'; }
+
+document.getElementById('regForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  hideMsgs();
+
+  const name = document.getElementById('name').value.trim();
+  const phone = document.getElementById('phone').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const password2 = document.getElementById('password2').value;
+
+  if(!/^01[0-9]{9}$/.test(phone)){ showErr('ফোন নম্বরটি সঠিক ফরম্যাটে দিন (উদাহরণঃ 01712345678)।'); return; }
+  if(password !== password2){ showErr('দুটি পাসওয়ার্ড মিলছে না।'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> অপেক্ষা করুন...';
+
+  try{
+    await window.MahinFirebaseReady;
+    const cred = await window.auth.createUserWithEmailAndPassword(email, password);
+    await window.db.collection('users').doc(cred.user.uid).set({
+      name, phone, email,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    document.getElementById('okMsg').textContent = 'অ্যাকাউন্ট তৈরি হয়েছে! নিয়ে যাওয়া হচ্ছে...';
+    document.getElementById('okMsg').style.display = 'block';
+    setTimeout(() => location.href = 'index.html', 800);
+  }catch(err){
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-user-plus"></i> রেজিস্ট্রেশন করুন';
+    showErr(friendlyError(err));
+  }
+});
+
+function friendlyError(err){
+  const code = err && err.code;
+  if(code === 'auth/email-already-in-use') return 'এই ইমেইল দিয়ে আগেই একটি অ্যাকাউন্ট আছে। লগইন করুন।';
+  if(code === 'auth/invalid-email') return 'সঠিক ইমেইল ঠিকানা দিন।';
+  if(code === 'auth/weak-password') return 'পাসওয়ার্ড অনেক দুর্বল, কমপক্ষে ৬ অক্ষর দিন।';
+  return err && err.message ? err.message : 'কিছু একটা সমস্যা হয়েছে, আবার চেষ্টা করুন।';
+}
+</script>
+</body>
+</html>

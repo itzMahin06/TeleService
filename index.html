@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>মাহিন সার্ভিস — আবেদন ফি পেমেন্ট সহায়তা</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">
+        <div class="name">মাহিন সার্ভিস</div>
+        <div class="slogan">By Mahin</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="header-user" id="headerUser"><i class="fa-solid fa-circle-user"></i> <span id="headerUserName">...</span></span>
+      <button class="btn-pill" onclick="openDrawer()">
+        <i class="fa-solid fa-receipt"></i> অর্ডার তালিকা
+        <span class="count" id="orderCount">0</span>
+      </button>
+      <button class="btn-pill" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> লগআউট</button>
+    </div>
+  </div>
+</header>
+
+<div class="notice">
+  <div class="notice-box">
+    <i class="fa-solid fa-circle-info"></i>
+    <div>
+      <b>মাহিন সার্ভিস</b> কোনো সরকারি বা টেলিটক অফিশিয়াল সেবা নয়। যাদের নিজস্ব টেলিটক সিম নেই, তাদের সরকারি চাকরির আবেদন ফি নিজের সিম দিয়ে পরিশোধ করে দেওয়ার একটি ব্যক্তিগত সহায়তা সেবা মাত্র। জমা দেওয়ার পর অ্যাডমিন যাচাই করে অনুমোদন দেবেন।
+    </div>
+  </div>
+</div>
+
+<section class="hero">
+  <div>
+    <h1>আপনার হয়ে <span>আবেদন ফি</span> পরিশোধ করে দেই,<br>নিরাপদে ও দ্রুত।</h1>
+    <p>টেলিটক সিম নেই? চিন্তা নেই। আবেদনপত্র (PDF) আপলোড করুন, বিকাশ/নগদ/রকেটে টাকা পাঠান — বাকিটা আমরা সামলে নেব।</p>
+    <div class="hero-fee"><i class="fa-solid fa-shield-heart"></i> প্রতিটি লেনদেন অ্যাডমিন কর্তৃক যাচাই করা হয়</div>
+  </div>
+  <div class="sim-visual">
+    <div class="sim-chip"></div>
+    <div class="sim-label">Send Money — bKash · Nagad · Rocket</div>
+    <div class="sim-number" id="simNumber">01931-923910</div>
+    <div class="sim-foot">
+      <small>MAHIN SERVICE</small>
+      <button class="sim-copy" onclick="copyNumber()"><i class="fa-regular fa-copy"></i> কপি</button>
+    </div>
+  </div>
+</section>
+
+<section class="steps">
+  <div class="step"><div class="num">০১</div><div><h3>আবেদনপত্র আপলোড করুন</h3><p>আপনার নাম ও ফোন নম্বর প্রোফাইল থেকে স্বয়ংক্রিয়ভাবে যুক্ত হবে।</p></div></div>
+  <div class="step"><div class="num">০২</div><div><h3>টাকা পাঠান</h3><p>01931923910 নম্বরে Send Money করুন — বিকাশ, নগদ বা রকেটে।</p></div></div>
+  <div class="step"><div class="num">০৩</div><div><h3>তথ্য জমা দিন</h3><p>প্রেরকের নম্বর ও ট্রানজেকশন আইডি দিয়ে সাবমিট করুন, অ্যাডমিন অনুমোদন দিলে স্ট্যাটাস আপডেট হবে।</p></div></div>
+</section>
+
+<section class="panel">
+  <div class="card" id="formCard">
+    <h2>আবেদন ফি জমার ফর্ম</h2>
+    <div class="sub">নিচের তথ্য আপনার প্রোফাইল থেকে এসেছে — শুধু পেমেন্ট তথ্য ও আবেদনপত্র দিন।</div>
+
+    <div class="profile-chip">
+      <div class="avatar" id="avatarLetter">?</div>
+      <div class="who">
+        <b id="profName">লোড হচ্ছে...</b>
+        <span id="profPhone">—</span>
+      </div>
+    </div>
+
+    <div class="error-msg" id="formError"></div>
+
+    <form id="paymentForm">
+      <div class="field">
+        <label>আবেদন ফি (৳) <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+        <input type="number" id="feeAmount" placeholder="যেমনঃ 150" min="1" required style="max-width:220px;">
+      </div>
+
+      <div class="field">
+        <label>আবেদনপত্র আপলোড করুন (PDF) <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+        <div class="upload-box" id="uploadBox" onclick="document.getElementById('fileInput').click()">
+          <i class="fa-solid fa-file-arrow-up"></i>
+          <div>ফাইল নির্বাচন করতে ক্লিক করুন অথবা ড্র্যাগ করে ছাড়ুন</div>
+          <div class="hint">শুধুমাত্র PDF, সর্বোচ্চ 8MB</div>
+          <div class="fname" id="fileNameShow"></div>
+        </div>
+        <input type="file" id="fileInput" accept="application/pdf">
+      </div>
+
+      <div class="divider">পেমেন্ট তথ্য</div>
+
+      <div class="field">
+        <label>পেমেন্ট মেথড নির্বাচন করুন</label>
+        <div class="pay-methods">
+          <input type="radio" name="pm" id="pmBkash" value="বিকাশ" checked>
+          <label for="pmBkash" class="pm-bkash"><i class="fa-solid fa-mobile-screen-button"></i> বিকাশ</label>
+          <input type="radio" name="pm" id="pmNagad" value="নগদ">
+          <label for="pmNagad" class="pm-nagad"><i class="fa-solid fa-wallet"></i> নগদ</label>
+          <input type="radio" name="pm" id="pmRocket" value="রকেট">
+          <label for="pmRocket" class="pm-rocket"><i class="fa-solid fa-rocket"></i> রকেট</label>
+        </div>
+      </div>
+
+      <div class="send-box">
+        <i class="fa-solid fa-circle-arrow-right"></i>
+        <div>এই নম্বরে <b>Send Money</b> করুন: <span class="num" id="sendBoxNum">01931923910</span></div>
+      </div>
+
+      <div class="grid2">
+        <div class="field">
+          <label>প্রেরকের (যে নম্বর থেকে টাকা পাঠিয়েছেন) নম্বর <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+          <input type="tel" id="senderNumber" placeholder="01XXXXXXXXX" maxlength="11" required>
+        </div>
+        <div class="field">
+          <label>ট্রানজেকশন আইডি <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+          <input type="text" id="trxId" placeholder="যেমনঃ 9F3K7L2P1Q" required style="text-transform:uppercase;">
+        </div>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submitBtn"><i class="fa-solid fa-paper-plane"></i> তথ্য জমা দিন</button>
+    </form>
+  </div>
+
+  <!-- RECEIPT VIEW -->
+  <div id="receiptView">
+    <div class="success-banner">
+      <i class="fa-solid fa-circle-check"></i>
+      <h2>আপনার তথ্য সফলভাবে জমা হয়েছে</h2>
+      <p>নিচে আপনার রিসিট দেখুন। অ্যাডমিন যাচাই করলে স্ট্যাটাস এখানে ও অর্ডার তালিকায় আপডেট হবে।</p>
+    </div>
+
+    <div id="receiptCard">
+      <div class="receipt-top">
+        <div class="rt-brand">
+          <div class="mk"></div>
+          <div><b>মাহিন সার্ভিস</b><span>BY MAHIN</span></div>
+        </div>
+        <div class="rt-id">অর্ডার আইডি<b id="rOrderId">—</b></div>
+      </div>
+      <div class="receipt-body">
+        <div class="receipt-grid">
+          <div class="rline"><div class="k">আবেদনকারীর নাম</div><div class="v" id="rName">—</div></div>
+          <div class="rline"><div class="k">ফোন নম্বর</div><div class="v mono" id="rPhone">—</div></div>
+          <div class="rline"><div class="k">পেমেন্ট মেথড</div><div class="v" id="rMethod">—</div></div>
+          <div class="rline"><div class="k">আবেদন ফি</div><div class="v amount" id="rAmount">—</div></div>
+          <div class="rline"><div class="k">প্রেরকের নম্বর</div><div class="v mono" id="rSender">—</div></div>
+          <div class="rline"><div class="k">ট্রানজেকশন আইডি</div><div class="v mono" id="rTrx">—</div></div>
+          <div class="rline"><div class="k">আবেদনপত্র</div><div class="v" id="rFile">—</div></div>
+          <div class="rline"><div class="k">জমার তারিখ ও সময়</div><div class="v" id="rDate">—</div></div>
+        </div>
+        <div class="status-pill"><span class="badge pending" id="rStatus"><i class="fa-solid fa-clock"></i> যাচাই মুলতুবি</span></div>
+        <div class="receipt-note">এই রিসিটটি প্রাথমিক জমার প্রমাণ। পেমেন্ট যাচাইয়ের পর আবেদন প্রক্রিয়া সম্পন্ন করা হবে।</div>
+      </div>
+    </div>
+
+    <div class="receipt-actions">
+      <button class="action-btn pdf" onclick="downloadReceiptPDF()"><i class="fa-solid fa-file-pdf"></i> পিডিএফ ডাউনলোড</button>
+      <button class="action-btn email" onclick="sendViaEmail()"><i class="fa-solid fa-envelope"></i> ইমেইলে পাঠান</button>
+      <button class="action-btn whatsapp" onclick="sendViaWhatsapp()"><i class="fa-brands fa-whatsapp"></i> হোয়াটসঅ্যাপে পাঠান</button>
+      <button class="action-btn new" onclick="resetForm()"><i class="fa-solid fa-plus"></i> নতুন আবেদন জমা দিন</button>
+    </div>
+  </div>
+</section>
+
+<footer>তৈরি করেছেন <b>মাহিন</b> — এটি একটি ব্যক্তিগত সহায়তা সেবা, টেলিটক বা সরকারের অফিশিয়াল সেবা নয়।</footer>
+
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3><i class="fa-solid fa-receipt"></i> আমার অর্ডার তালিকা</h3>
+    <button onclick="closeDrawer()"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="drawer-body" id="drawerBody"><div class="loading-row"><i class="fa-solid fa-circle-notch"></i>লোড হচ্ছে...</div></div>
+</div>
+
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg"></span></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script>
+const PAY_NUMBER = "01931923910";
+const EMAIL_TO = "info.itzmahin@gmail.com";
+const WHATSAPP_TO = "8801575804507";
+
+let uploadedFile = null;
+let currentUser = null;
+let userProfile = null;
+let ordersUnsub = null;
+
+document.getElementById('sendBoxNum').textContent = PAY_NUMBER;
+
+(async function boot(){
+  currentUser = await window.requireLogin();
+  if(!currentUser) return;
+
+  document.getElementById('headerUserName').textContent = currentUser.email;
+
+  const snap = await window.db.collection('users').doc(currentUser.uid).get();
+  userProfile = snap.exists ? snap.data() : { name: currentUser.email, phone: '—' };
+
+  document.getElementById('profName').textContent = userProfile.name || currentUser.email;
+  document.getElementById('profPhone').textContent = userProfile.phone || '—';
+  document.getElementById('avatarLetter').textContent = (userProfile.name || currentUser.email || '?').trim().charAt(0).toUpperCase();
+
+  watchMyOrders();
+})();
+
+function doLogout(){
+  window.auth.signOut().then(() => location.href = 'login.html');
+}
+
+// ---------- File upload ----------
+const uploadBox = document.getElementById('uploadBox');
+const fileInput = document.getElementById('fileInput');
+fileInput.addEventListener('change', e => handleFile(e.target.files[0]));
+['dragover','dragenter'].forEach(ev => uploadBox.addEventListener(ev, e => { e.preventDefault(); uploadBox.classList.add('drag'); }));
+['dragleave','drop'].forEach(ev => uploadBox.addEventListener(ev, e => { e.preventDefault(); uploadBox.classList.remove('drag'); }));
+uploadBox.addEventListener('drop', e => { if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); });
+
+function handleFile(file){
+  if(!file) return;
+  if(file.type !== 'application/pdf'){ showError('শুধুমাত্র PDF ফাইল আপলোড করা যাবে।'); return; }
+  if(file.size > 8*1024*1024){ showError('ফাইলের সাইজ 8MB এর বেশি হতে পারবে না।'); return; }
+  uploadedFile = file;
+  document.getElementById('fileNameShow').innerHTML = '<i class="fa-solid fa-file-pdf"></i> ' + file.name;
+}
+
+// ---------- Form submit ----------
+document.getElementById('paymentForm').addEventListener('submit', async function(e){
+  e.preventDefault();
+  hideError();
+
+  const fee = document.getElementById('feeAmount').value.trim();
+  const method = document.querySelector('input[name=pm]:checked').value;
+  const sender = document.getElementById('senderNumber').value.trim();
+  const trx = document.getElementById('trxId').value.trim().toUpperCase();
+
+  if(!fee || !sender || !trx){ showError('অনুগ্রহ করে সকল আবশ্যক ঘর পূরণ করুন।'); return; }
+  if(!/^01[0-9]{9}$/.test(sender)){ showError('প্রেরকের নম্বরটি সঠিক ফরম্যাটে দিন।'); return; }
+  if(!uploadedFile){ showError('আবেদনপত্রের PDF ফাইল আপলোড করুন।'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> জমা হচ্ছে...';
+
+  try{
+    const orderCode = 'MS' + Date.now().toString().slice(-8);
+    const path = `applications/${currentUser.uid}/${Date.now()}_${uploadedFile.name}`;
+    const ref = window.storage.ref().child(path);
+    await ref.put(uploadedFile);
+    const fileURL = await ref.getDownloadURL();
+
+    const orderData = {
+      orderCode,
+      uid: currentUser.uid,
+      name: userProfile.name || currentUser.email,
+      phone: userProfile.phone || '—',
+      email: currentUser.email,
+      fee, method, sender, trx,
+      fileName: uploadedFile.name,
+      fileURL,
+      status: 'pending',
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    const docRef = await window.db.collection('orders').add(orderData);
+    orderData._id = docRef.id;
+    orderData._dateText = new Date().toLocaleString('bn-BD', { dateStyle:'medium', timeStyle:'short' });
+
+    renderReceipt(orderData);
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('receiptView').style.display = 'block';
+    window.scrollTo({top:0, behavior:'smooth'});
+  }catch(err){
+    showError('জমা দিতে সমস্যা হয়েছে: ' + (err && err.message ? err.message : 'আবার চেষ্টা করুন।'));
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> তথ্য জমা দিন';
+  }
+});
+
+function showError(msg){ const el = document.getElementById('formError'); el.textContent = msg; el.style.display='block'; }
+function hideError(){ document.getElementById('formError').style.display='none'; }
+
+// ---------- Receipt render ----------
+const STATUS_LABEL = {
+  pending:{cls:'pending', icon:'fa-clock', text:'যাচাই মুলতুবি'},
+  approved:{cls:'approved', icon:'fa-circle-check', text:'অনুমোদিত'},
+  declined:{cls:'declined', icon:'fa-circle-xmark', text:'বাতিল হয়েছে'}
+};
+
+function renderReceipt(order){
+  document.getElementById('rOrderId').textContent = order.orderCode;
+  document.getElementById('rName').textContent = order.name;
+  document.getElementById('rPhone').textContent = order.phone;
+  document.getElementById('rMethod').textContent = order.method;
+  document.getElementById('rAmount').textContent = '৳ ' + order.fee;
+  document.getElementById('rSender').textContent = order.sender;
+  document.getElementById('rTrx').textContent = order.trx;
+  document.getElementById('rFile').textContent = order.fileName;
+  document.getElementById('rDate').textContent = order._dateText || (order.createdAt && order.createdAt.toDate ? order.createdAt.toDate().toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}) : '—');
+
+  const s = STATUS_LABEL[order.status] || STATUS_LABEL.pending;
+  const badge = document.getElementById('rStatus');
+  badge.className = 'badge ' + s.cls;
+  badge.innerHTML = `<i class="fa-solid ${s.icon}"></i> ${s.text}`;
+
+  window.currentOrder = order;
+}
+
+function resetForm(){
+  document.getElementById('paymentForm').reset();
+  uploadedFile = null;
+  document.getElementById('fileNameShow').textContent = '';
+  document.getElementById('formCard').style.display = 'block';
+  document.getElementById('receiptView').style.display = 'none';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ---------- PDF download ----------
+function downloadReceiptPDF(){
+  const node = document.getElementById('receiptCard');
+  showToast('পিডিএফ তৈরি হচ্ছে...');
+  html2canvas(node, {scale:3, backgroundColor:'#ffffff', useCORS:true}).then(canvas => {
+    const { jsPDF } = window.jspdf;
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF({ orientation:'p', unit:'pt', format:'a4' });
+    const pageW = pdf.internal.pageSize.getWidth();
+    const pageH = pdf.internal.pageSize.getHeight();
+    const margin = 40, topBar = 14, footerSpace = 34;
+    const availW = pageW - margin*2;
+    const availH = pageH - topBar - margin - footerSpace - 20;
+    let imgW = availW, imgH = (canvas.height * imgW) / canvas.width;
+    if(imgH > availH){ imgH = availH; imgW = (canvas.width * imgH) / canvas.height; }
+    const x = (pageW - imgW) / 2, y = topBar + 26;
+    pdf.setFillColor(216,30,44); pdf.rect(0,0,pageW,topBar,'F');
+    pdf.addImage(imgData, 'PNG', x, y, imgW, imgH);
+    pdf.setFontSize(9); pdf.setTextColor(150,140,135);
+    pdf.text('Mahin Service — Personal application-fee assistance (not an official Teletalk service)', margin, y + imgH + 24);
+    pdf.save((window.currentOrder ? window.currentOrder.orderCode : 'receipt') + '.pdf');
+    showToast('পিডিএফ ডাউনলোড হয়েছে ✓');
+  });
+}
+
+// ---------- Email / WhatsApp ----------
+function sendViaEmail(){
+  const o = window.currentOrder; if(!o) return;
+  const subject = encodeURIComponent('আবেদন ফি জমা — ' + o.orderCode + ' — ' + o.name);
+  const body = encodeURIComponent(
+`অর্ডার আইডি: ${o.orderCode}
+আবেদনকারীর নাম: ${o.name}
+ফোন নম্বর: ${o.phone}
+আবেদন ফি: ৳${o.fee}
+পেমেন্ট মেথড: ${o.method}
+প্রেরকের নম্বর: ${o.sender}
+ট্রানজেকশন আইডি: ${o.trx}
+আবেদনপত্র ফাইল: ${o.fileName}
+আবেদনপত্র লিংক: ${o.fileURL}
+
+(দ্রষ্টব্যঃ প্রথমে "পিডিএফ ডাউনলোড" বাটনে ক্লিক করে রিসিট ডাউনলোড করে এই ইমেইলে সংযুক্ত করুন — ব্রাউজার স্বয়ংক্রিয়ভাবে ফাইল সংযুক্ত করতে পারে না। আবেদনপত্রের PDF উপরের লিংক থেকে দেখা যাবে।)`
+  );
+  window.location.href = `mailto:${EMAIL_TO}?subject=${subject}&body=${body}`;
+  showToast('ইমেইল অ্যাপ খোলা হচ্ছে...');
+}
+
+function sendViaWhatsapp(){
+  const o = window.currentOrder; if(!o) return;
+  const text = encodeURIComponent(
+`*আবেদন ফি জমা*
+অর্ডার আইডি: ${o.orderCode}
+নাম: ${o.name}
+ফোন: ${o.phone}
+ফি: ৳${o.fee}
+মেথড: ${o.method}
+প্রেরক নম্বর: ${o.sender}
+ট্রানজেকশন আইডি: ${o.trx}
+ফাইল: ${o.fileName}
+আবেদনপত্র লিংক: ${o.fileURL}`
+  );
+  window.open(`https://wa.me/${WHATSAPP_TO}?text=${text}`, '_blank');
+}
+
+function copyNumber(){
+  navigator.clipboard.writeText(PAY_NUMBER).then(()=> showToast('নম্বর কপি হয়েছে ✓'));
+}
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2600);
+}
+
+// ---------- Live order list (Firestore) ----------
+function watchMyOrders(){
+  ordersUnsub = window.db.collection('orders')
+    .where('uid', '==', currentUser.uid)
+    .orderBy('createdAt', 'desc')
+    .onSnapshot(renderDrawer, err => {
+      document.getElementById('drawerBody').innerHTML =
+        `<div class="empty-orders"><i class="fa-solid fa-triangle-exclamation"></i><br>অর্ডার লোড করতে সমস্যা হয়েছে।<br><small>${err.message}</small></div>`;
+    });
+}
+
+function renderDrawer(querySnap){
+  const orders = [];
+  querySnap.forEach(doc => orders.push({ _id: doc.id, ...doc.data() }));
+  document.getElementById('orderCount').textContent = orders.length;
+
+  const body = document.getElementById('drawerBody');
+  if(orders.length === 0){
+    body.innerHTML = `<div class="empty-orders"><i class="fa-regular fa-folder-open"></i><br>এখনো কোনো আবেদন জমা দেওয়া হয়নি।</div>`;
+    return;
+  }
+  body.innerHTML = orders.map(o => {
+    const s = STATUS_LABEL[o.status] || STATUS_LABEL.pending;
+    const dateText = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate().toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}) : '...';
+    return `
+    <div class="order-item" onclick='viewOrder(${JSON.stringify(o._id)})'>
+      <div class="oi-top"><span>${dateText}</span><b>${o.orderCode}</b></div>
+      <div class="oi-name">${o.name}</div>
+      <div class="oi-meta"><i class="fa-solid fa-wallet"></i> ${o.method} · ৳${o.fee}</div>
+      <div style="margin-top:8px;"><span class="badge ${s.cls}"><i class="fa-solid ${s.icon}"></i> ${s.text}</span></div>
+    </div>`;
+  }).join('');
+
+  window._myOrders = orders;
+}
+
+function viewOrder(id){
+  const order = (window._myOrders || []).find(o => o._id === id);
+  if(!order) return;
+  renderReceipt(order);
+  document.getElementById('formCard').style.display = 'none';
+  document.getElementById('receiptView').style.display = 'block';
+  closeDrawer();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function openDrawer(){
+  document.getElementById('overlay').style.display = 'block';
+  document.getElementById('drawer').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('overlay').style.display = 'none';
+  document.getElementById('drawer').classList.remove('open');
+}
+</script>
+</body>
+</html>

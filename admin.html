@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>অ্যাডমিন প্যানেল — মাহিন সার্ভিস</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark"></div>
+      <div class="brand-text">
+        <div class="name">মাহিন সার্ভিস <span style="opacity:.7; font-weight:400;">— অ্যাডমিন</span></div>
+        <div class="slogan">By Mahin</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span class="header-user" id="headerUser"><i class="fa-solid fa-user-shield"></i> <span id="headerUserName">...</span></span>
+      <a class="btn-pill" href="index.html"><i class="fa-solid fa-house"></i> সাইটে যান</a>
+      <button class="btn-pill" onclick="doLogout()"><i class="fa-solid fa-right-from-bracket"></i> লগআউট</button>
+    </div>
+  </div>
+</header>
+
+<section class="panel">
+  <div class="stat-row">
+    <div class="stat-card"><div class="n" id="statTotal">0</div><div class="l">মোট আবেদন</div></div>
+    <div class="stat-card"><div class="n" id="statPending">0</div><div class="l">যাচাই মুলতুবি</div></div>
+    <div class="stat-card"><div class="n" id="statApproved">0</div><div class="l">অনুমোদিত</div></div>
+    <div class="stat-card"><div class="n" id="statDeclined">0</div><div class="l">বাতিল হয়েছে</div></div>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab active" id="tabOrdersBtn" onclick="switchTab('orders')"><i class="fa-solid fa-receipt"></i> অর্ডার তালিকা</button>
+    <button class="admin-tab" id="tabUsersBtn" onclick="switchTab('users')"><i class="fa-solid fa-users"></i> ব্যবহারকারী তালিকা</button>
+  </div>
+
+  <div id="ordersTab">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>অর্ডার আইডি</th><th>নাম</th><th>ফোন</th><th>ফি</th><th>মেথড</th>
+            <th>প্রেরক নম্বর</th><th>ট্রানজেকশন আইডি</th><th>আবেদনপত্র</th><th>তারিখ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody">
+          <tr><td colspan="11"><div class="loading-row"><i class="fa-solid fa-circle-notch"></i>লোড হচ্ছে...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="usersTab" style="display:none;">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>নাম</th><th>ফোন</th><th>ইমেইল</th><th>রেজিস্ট্রেশনের তারিখ</th><th>মোট আবেদন</th></tr>
+        </thead>
+        <tbody id="usersBody">
+          <tr><td colspan="5"><div class="loading-row"><i class="fa-solid fa-circle-notch"></i>লোড হচ্ছে...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg"></span></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script>
+let allOrders = [];
+let allUsers = [];
+
+(async function boot(){
+  const user = await window.requireAdmin();
+  if(!user) return;
+  document.getElementById('headerUserName').textContent = user.email;
+  watchOrders();
+  watchUsers();
+})();
+
+function doLogout(){
+  window.auth.signOut().then(() => location.href = 'login.html');
+}
+
+function switchTab(tab){
+  document.getElementById('tabOrdersBtn').classList.toggle('active', tab === 'orders');
+  document.getElementById('tabUsersBtn').classList.toggle('active', tab === 'users');
+  document.getElementById('ordersTab').style.display = tab === 'orders' ? 'block' : 'none';
+  document.getElementById('usersTab').style.display = tab === 'users' ? 'block' : 'none';
+}
+
+const STATUS_LABEL = {
+  pending:{cls:'pending', icon:'fa-clock', text:'মুলতুবি'},
+  approved:{cls:'approved', icon:'fa-circle-check', text:'অনুমোদিত'},
+  declined:{cls:'declined', icon:'fa-circle-xmark', text:'বাতিল'}
+};
+
+function watchOrders(){
+  window.db.collection('orders').orderBy('createdAt', 'desc').onSnapshot(snap => {
+    allOrders = [];
+    snap.forEach(doc => allOrders.push({ _id: doc.id, ...doc.data() }));
+    renderOrders();
+    renderStats();
+    renderUsers(); // refresh order-count column
+  }, err => {
+    document.getElementById('ordersBody').innerHTML = `<tr><td colspan="11"><div class="loading-row">লোড করতে সমস্যা হয়েছে: ${err.message}</div></td></tr>`;
+  });
+}
+
+function watchUsers(){
+  window.db.collection('users').orderBy('createdAt', 'desc').onSnapshot(snap => {
+    allUsers = [];
+    snap.forEach(doc => allUsers.push({ _id: doc.id, ...doc.data() }));
+    renderUsers();
+  }, err => {
+    document.getElementById('usersBody').innerHTML = `<tr><td colspan="5"><div class="loading-row">লোড করতে সমস্যা হয়েছে: ${err.message}</div></td></tr>`;
+  });
+}
+
+function renderStats(){
+  document.getElementById('statTotal').textContent = allOrders.length;
+  document.getElementById('statPending').textContent = allOrders.filter(o => o.status === 'pending').length;
+  document.getElementById('statApproved').textContent = allOrders.filter(o => o.status === 'approved').length;
+  document.getElementById('statDeclined').textContent = allOrders.filter(o => o.status === 'declined').length;
+}
+
+function renderOrders(){
+  const tbody = document.getElementById('ordersBody');
+  if(allOrders.length === 0){
+    tbody.innerHTML = `<tr><td colspan="11"><div class="loading-row"><i class="fa-regular fa-folder-open" style="animation:none;"></i>এখনো কোনো আবেদন জমা পড়েনি।</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allOrders.map(o => {
+    const s = STATUS_LABEL[o.status] || STATUS_LABEL.pending;
+    const dateText = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate().toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}) : '...';
+    return `
+    <tr>
+      <td><b>${o.orderCode || o._id}</b></td>
+      <td>${o.name || ''}</td>
+      <td>${o.phone || ''}</td>
+      <td>৳${o.fee || ''}</td>
+      <td>${o.method || ''}</td>
+      <td>${o.sender || ''}</td>
+      <td>${o.trx || ''}</td>
+      <td>${o.fileURL ? `<a class="mini-btn view" href="${o.fileURL}" target="_blank"><i class="fa-solid fa-file-pdf"></i> দেখুন</a>` : '—'}</td>
+      <td>${dateText}</td>
+      <td><span class="badge ${s.cls}"><i class="fa-solid ${s.icon}"></i> ${s.text}</span></td>
+      <td style="white-space:nowrap;">
+        <button class="mini-btn approve" ${o.status==='approved'?'disabled':''} onclick="setStatus('${o._id}','approved')"><i class="fa-solid fa-check"></i> অনুমোদন</button>
+        <button class="mini-btn decline" ${o.status==='declined'?'disabled':''} onclick="setStatus('${o._id}','declined')"><i class="fa-solid fa-xmark"></i> বাতিল</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderUsers(){
+  const tbody = document.getElementById('usersBody');
+  if(allUsers.length === 0){
+    tbody.innerHTML = `<tr><td colspan="5"><div class="loading-row"><i class="fa-regular fa-folder-open" style="animation:none;"></i>এখনো কোনো ব্যবহারকারী রেজিস্ট্রেশন করেননি।</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allUsers.map(u => {
+    const dateText = u.createdAt && u.createdAt.toDate ? u.createdAt.toDate().toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}) : '...';
+    const orderCount = allOrders.filter(o => o.uid === u._id).length;
+    return `
+    <tr>
+      <td>${u.name || ''}</td>
+      <td>${u.phone || ''}</td>
+      <td>${u.email || ''}</td>
+      <td>${dateText}</td>
+      <td>${orderCount}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function setStatus(orderId, status){
+  try{
+    await window.db.collection('orders').doc(orderId).update({ status });
+    showToast(status === 'approved' ? 'অর্ডার অনুমোদন করা হয়েছে ✓' : 'অর্ডার বাতিল করা হয়েছে');
+  }catch(err){
+    showToast('সমস্যা হয়েছে: ' + err.message);
+  }
+}
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2600);
+}
+</script>
+</body>
+</html>
