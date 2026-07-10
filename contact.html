@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>যোগাযোগ — মাহিন সার্ভিস</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <a class="brand" href="index.html" style="text-decoration:none; color:inherit;">
+      <div class="brand-mark"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="brand-text">
+        <div class="name">মাহিন সার্ভিস</div>
+        <div class="slogan">By Mahin</div>
+      </div>
+    </a>
+    <div class="header-actions">
+      <a class="btn-pill" href="index.html"><i class="fa-solid fa-house"></i> হোম</a>
+    </div>
+  </div>
+</header>
+
+<section class="panel" style="margin-top:34px;">
+  <div class="contact-grid">
+    <div class="contact-info-card">
+      <h2><i class="fa-solid fa-address-book"></i> যোগাযোগের তথ্য</h2>
+
+      <div class="contact-row">
+        <i class="fa-solid fa-envelope"></i>
+        <div>
+          <div style="font-size:10.5px; color:var(--ink-soft); margin-bottom:3px;">ইমেইল</div>
+          <a href="mailto:info.itzmahin@gmail.com">info.itzmahin@gmail.com</a>
+        </div>
+      </div>
+      <div class="contact-row">
+        <i class="fa-brands fa-telegram"></i>
+        <div>
+          <div style="font-size:10.5px; color:var(--ink-soft); margin-bottom:3px;">টেলিগ্রাম</div>
+          <a href="https://t.me/teletalkpayment" target="_blank" rel="noopener">t.me/teletalkpayment</a>
+        </div>
+      </div>
+      <div class="contact-row">
+        <i class="fa-solid fa-clock"></i>
+        <div>
+          <div style="font-size:10.5px; color:var(--ink-soft); margin-bottom:3px;">সাড়া দেওয়ার সময়</div>
+          <span>সাধারণত ২৪ ঘণ্টার মধ্যে</span>
+        </div>
+      </div>
+
+      <div class="notice-box" style="margin-top:18px;">
+        <i class="fa-solid fa-circle-info"></i>
+        <div>জরুরি প্রয়োজনে সরাসরি টেলিগ্রামে বার্তা পাঠানোই সবচেয়ে দ্রুত উপায়।</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>বার্তা পাঠান</h2>
+      <div class="sub">নিচের ফর্মটি পূরণ করলে বার্তাটি সরাসরি আমাদের টেলিগ্রামে পৌঁছে যাবে।</div>
+
+      <div class="error-msg" id="errMsg"></div>
+      <div class="ok-msg" id="okMsg"></div>
+
+      <form id="contactForm">
+        <div class="field">
+          <label>আপনার নাম</label>
+          <input type="text" id="cName" placeholder="আপনার নাম লিখুন" required>
+        </div>
+        <div class="field">
+          <label>ইমেইল / ফোন নম্বর</label>
+          <input type="text" id="cContact" placeholder="যোগাযোগের জন্য ইমেইল বা ফোন নম্বর" required>
+        </div>
+        <div class="field">
+          <label>বার্তা</label>
+          <textarea id="cMessage" rows="5" placeholder="আপনার প্রশ্ন বা সমস্যাটি লিখুন..." required></textarea>
+        </div>
+        <button type="submit" class="submit-btn" id="cSubmitBtn"><i class="fa-solid fa-paper-plane"></i> বার্তা পাঠান</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-links">
+    <a href="privacy.html">গোপনীয়তা নীতি</a>
+    <a href="refund.html">রিফান্ড নীতি</a>
+    <a href="contact.html">যোগাযোগ</a>
+  </div>
+  তৈরি করেছেন <b>মাহিন</b> — এটি একটি ব্যক্তিগত সহায়তা সেবা, টেলিটক বা সরকারের অফিশিয়াল সেবা নয়।
+</footer>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const errEl = document.getElementById('errMsg');
+  const okEl = document.getElementById('okMsg');
+  errEl.style.display = 'none';
+  okEl.style.display = 'none';
+
+  const name = document.getElementById('cName').value.trim();
+  const contact = document.getElementById('cContact').value.trim();
+  const message = document.getElementById('cMessage').value.trim();
+
+  const btn = document.getElementById('cSubmitBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> পাঠানো হচ্ছে...';
+
+  try{
+    const res = await fetch('/api/contact', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, contact, message })
+    });
+    const data = await res.json();
+    if(!res.ok || !data.ok){ throw new Error(data.error || 'বার্তা পাঠাতে সমস্যা হয়েছে।'); }
+
+    okEl.textContent = 'ধন্যবাদ! আপনার বার্তা পাঠানো হয়েছে, শীঘ্রই যোগাযোগ করা হবে।';
+    okEl.style.display = 'block';
+    document.getElementById('contactForm').reset();
+  }catch(err){
+    errEl.textContent = err && err.message ? err.message : 'বার্তা পাঠাতে সমস্যা হয়েছে, আবার চেষ্টা করুন।';
+    errEl.style.display = 'block';
+  }finally{
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> বার্তা পাঠান';
+  }
+});
+</script>
+</body>
+</html>
