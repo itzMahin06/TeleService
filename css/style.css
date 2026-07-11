@@ -1,5 +1,5 @@
 @import url("https://fonts.maateen.me/solaiman-lipi/font.css");
-
+@import url('https://banglawebfonts.pages.dev/css/google-sans.css');
 :root{
   --brand:#3fa34d;
   --brand-deep:#237a38;
@@ -22,7 +22,9 @@
 *{box-sizing:border-box; margin:0; padding:0;}
 html{scroll-behavior:smooth;}
 body{
-  font-family:'SolaimanLipi','Noto Sans Bengali',sans-serif;
+  font-family: 'Google Sans', sans-serif;
+  font-weight: 500;
+  font-style: medium;
   background:
     radial-gradient(circle at 8% 0%, #eaf6ec 0%, transparent 45%),
     radial-gradient(circle at 100% 20%, #eef7f1 0%, transparent 40%),
