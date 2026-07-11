@@ -1,0 +1,6 @@
+{
+  "name": "mahin-service",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mahin Service — application fee payment assistance site (Firebase + Vercel)"
+}
