@@ -80,7 +80,13 @@ header.site{
   min-width:17px; height:17px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 5px;
 }
 .btn-pill.icon-only{padding:7px 10px;}
-
+.btn-pill,
+.btn-pill:hover,
+.btn-pill:visited,
+.btn-pill:focus,
+.btn-pill:active{
+  text-decoration: none !important;
+}
 /* ===== Notice ===== */
 .notice{max-width:1180px; margin:18px auto 0; padding:0 22px;}
 .notice-box{
