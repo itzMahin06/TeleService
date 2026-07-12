@@ -116,6 +116,7 @@ header.site{
 .btn-pill.icon-only{
   padding:7px 10px;
 }
+.sub-link {text-decoration:none;}
 /* ===== Notice ===== */
 .notice{max-width:1180px; margin:18px auto 0; padding:0 22px;}
 .notice-box{
@@ -215,8 +216,8 @@ input[type=file]{display:none;}
 .profile-chip .who b{font-size:12.5px; display:block;}
 .profile-chip .who span{font-size:10px; color:var(--ink-soft);}
 
-.submit-btn{width:100%; margin-top:2px; padding:12px; border:none; border-radius:11px; background:linear-gradient(135deg,var(--brand),var(--brand-deep)); color:#fff; font-size:13.5px; font-weight:700; letter-spacing:.2px; box-shadow:0 8px 18px -10px rgba(22,60,34,.4); display:flex; align-items:center; justify-content:center; gap:9px; transition:.18s;}
-.submit-btn:hover{transform:translateY(-1px); box-shadow:0 10px 22px -10px rgba(22,60,34,.45);}
+.submit-btn{text-decoration:none; width:100%; margin-top:2px; padding:12px; border:none; border-radius:11px; background:linear-gradient(135deg,var(--brand),var(--brand-deep)); color:#fff; font-size:13.5px; font-weight:700; letter-spacing:.2px; box-shadow:0 8px 18px -10px rgba(22,60,34,.4); display:flex; align-items:center; justify-content:center; gap:9px; transition:.18s;}
+.submit-btn:hover{text-decoration:none; transform:translateY(-1px); box-shadow:0 10px 22px -10px rgba(22,60,34,.45);}
 .submit-btn:active{transform:translateY(1px) scale(.99);}
 .submit-btn:disabled{opacity:.6; cursor:not-allowed; transform:none;}
 .submit-btn i.fa-spin{animation:spin .8s linear infinite;}
