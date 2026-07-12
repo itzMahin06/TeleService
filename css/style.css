@@ -69,23 +69,52 @@ header.site{
 .brand-text .slogan{font-size:8.6px; color:#d8f3de; letter-spacing:1.8px; text-transform:uppercase;}
 .header-actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
 .btn-pill{
-  display:flex; align-items:center; gap:7px;
-  background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
-  color:#fff; padding:7px 13px; border-radius:999px; font-size:11.5px; transition:.2s;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  background:rgba(255,255,255,.14);
+  border:1px solid rgba(255,255,255,.3);
+  color:#fff;
+  text-decoration:none; /* Remove underline */
+  padding:7px 13px;
+  border-radius:999px;
+  font-size:11.5px;
+  transition:.2s;
 }
-.btn-pill:hover{background:rgba(255,255,255,.24); transform:translateY(-1px);}
-.btn-pill:active{transform:scale(.96);}
-.btn-pill .count{
-  background:#fff; color:var(--brand-deep); font-family:var(--mono); font-weight:700; font-size:9.5px;
-  min-width:17px; height:17px; border-radius:999px; display:flex; align-items:center; justify-content:center; padding:0 5px;
+
+.btn-pill:hover{
+  background:rgba(255,255,255,.24);
+  transform:translateY(-1px);
+  text-decoration:none; /* Keep underline removed on hover */
 }
-.btn-pill.icon-only{padding:7px 10px;}
-.btn-pill,
-.btn-pill:hover,
-.btn-pill:visited,
-.btn-pill:focus,
+
 .btn-pill:active{
-  text-decoration: none !important;
+  transform:scale(.96);
+}
+
+.btn-pill:visited,
+.btn-pill:focus{
+  color:#fff;
+  text-decoration:none;
+}
+
+.btn-pill .count{
+  background:#fff;
+  color:var(--brand-deep);
+  font-family:var(--mono);
+  font-weight:700;
+  font-size:9.5px;
+  min-width:17px;
+  height:17px;
+  border-radius:999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0 5px;
+}
+
+.btn-pill.icon-only{
+  padding:7px 10px;
 }
 /* ===== Notice ===== */
 .notice{max-width:1180px; margin:18px auto 0; padding:0 22px;}
