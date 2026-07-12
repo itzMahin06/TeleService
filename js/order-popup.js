@@ -8,8 +8,8 @@
 */
 
 (function () {
-  const WHATSAPP_NUMBER = "8801931923910"; // used for the wa.me contact link
-  const TELEGRAM_USERNAME = "MahinServiceBD"; // <-- CHANGE THIS to your real Telegram username
+  const WHATSAPP_NUMBER = "+8801931923910"; // used for the wa.me contact link
+  const TELEGRAM_USERNAME = "teletalkpayment"; // <-- CHANGE THIS to your real Telegram username
 
   let currentProduct = null;
   let currentUser = null;
