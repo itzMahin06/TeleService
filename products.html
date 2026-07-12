@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>প্রোডাক্টসমূহ — মাহিন সার্ভিস</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <a href="index.html" class="brand" style="text-decoration:none; color:inherit;">
+      <div class="brand-mark"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="brand-text">
+        <div class="name">মাহিন সার্ভিস</div>
+        <div class="slogan">By Mahin</div>
+      </div>
+    </a>
+    <div class="header-actions" id="guestActions" style="display:none;">
+      <a href="index.html" class="btn-pill"><i class="fa-solid fa-house"></i> হোম</a>
+      <a class="btn-pill" href="login.html"><i class="fa-solid fa-right-to-bracket"></i> লগইন</a>
+      <a class="btn-pill" href="register.html" style="background:rgba(255,255,255,.9); color:var(--brand-deep);"><i class="fa-solid fa-user-plus"></i> রেজিস্ট্রেশন</a>
+    </div>
+    <div class="header-actions" id="authActions" style="display:none;">
+      <a href="index.html" class="btn-pill"><i class="fa-solid fa-house"></i> হোম</a>
+      <div id="profileWidgetMount"></div>
+      <button class="btn-pill icon-only" onclick="doLogout()" title="লগআউট"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>
+  </div>
+</header>
+
+<div class="notice">
+  <div class="notice-box">
+    <i class="fa-solid fa-circle-info"></i>
+    <div>নিচের যেকোনো প্রোডাক্টে <b>অর্ডার করুন</b> চাপলে মন্ত্রণালয় ও ফি স্বয়ংক্রিয়ভাবে বসে যাবে — শুধু আপনার ইউজার আইডি ও পেমেন্ট তথ্য দিলেই হবে। আপনার মন্ত্রণালয় এখানে না থাকলে <a href="index.html#orderSection" style="color:var(--brand-deep); font-weight:700;">হোমপেজের ম্যানুয়াল ফর্ম</a> ব্যবহার করুন।</div>
+  </div>
+</div>
+
+<section class="panel">
+  <div class="products-head">
+    <h2><i class="fa-solid fa-shop" style="color:var(--gold);"></i> সকল প্রোডাক্ট</h2>
+  </div>
+  <div id="allProductsMount"><div class="loading-row"><i class="fa-solid fa-circle-notch"></i>লোড হচ্ছে...</div></div>
+</section>
+
+<footer>তৈরি করেছেন <b>মাহিন</b> — এটি একটি ব্যক্তিগত সহায়তা সেবা, টেলিটক বা সরকারের অফিশিয়াল সেবা নয়।</footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/profile-widget.js"></script>
+<script src="js/products-widget.js"></script>
+<script src="js/order-popup.js"></script>
+<script>
+(async function boot(){
+  const user = await window.getCurrentUser();
+  document.getElementById(user ? 'authActions' : 'guestActions').style.display = 'flex';
+  document.getElementById(user ? 'guestActions' : 'authActions').style.display = 'none';
+})();
+
+function doLogout(){
+  window.auth.signOut().then(() => location.href = 'index.html');
+}
+
+window.renderProducts('allProductsMount');
+</script>
+</body>
+</html>
