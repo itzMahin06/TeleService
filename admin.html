@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>অ্যাডমিন প্যানেল — মাহিন সার্ভিস</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="brand-text">
+        <div class="name">মাহিন সার্ভিস <span style="opacity:.7; font-weight:400;">— অ্যাডমিন</span></div>
+        <div class="slogan">By Mahin</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div id="profileWidgetMount"></div>
+      <a class="btn-pill icon-only" href="index.html" title="সাইটে যান"><i class="fa-solid fa-house"></i></a>
+      <button class="btn-pill icon-only" onclick="doLogout()" title="লগআউট"><i class="fa-solid fa-right-from-bracket"></i></button>
+    </div>
+  </div>
+</header>
+
+<section class="panel">
+  <div class="stat-row">
+    <div class="stat-card"><div class="n" id="statTotal">0</div><div class="l">মোট আবেদন</div></div>
+    <div class="stat-card"><div class="n" id="statPending">0</div><div class="l">যাচাই মুলতুবি</div></div>
+    <div class="stat-card"><div class="n" id="statApproved">0</div><div class="l">অনুমোদিত</div></div>
+    <div class="stat-card"><div class="n" id="statDeclined">0</div><div class="l">বাতিল হয়েছে</div></div>
+  </div>
+
+  <div class="admin-tabs">
+    <button class="admin-tab active" id="tabOrdersBtn" onclick="switchTab('orders')"><i class="fa-solid fa-receipt"></i> অর্ডার তালিকা</button>
+    <button class="admin-tab" id="tabProductsBtn" onclick="switchTab('products')"><i class="fa-solid fa-shop"></i> প্রোডাক্ট</button>
+    <button class="admin-tab" id="tabUsersBtn" onclick="switchTab('users')"><i class="fa-solid fa-users"></i> ব্যবহারকারী তালিকা</button>
+  </div>
+
+  <div id="ordersTab">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>অর্ডার আইডি</th><th>নাম</th><th>ফোন</th><th>ফি</th><th>মেথড</th>
+            <th>প্রেরক নম্বর</th><th>ট্রানজেকশন আইডি</th><th>মন্ত্রণালয়</th><th>ইউজার আইডি</th><th>তারিখ</th><th>স্ট্যাটাস</th><th>অ্যাকশন</th>
+          </tr>
+        </thead>
+        <tbody id="ordersBody">
+          <tr><td colspan="12"><div class="loading-row"><i class="fa-solid fa-circle-notch"></i>লোড হচ্ছে...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="productsTab" style="display:none;">
+    <div style="display:flex; justify-content:flex-end; margin-bottom:14px;">
+      <button class="submit-btn" style="width:auto; padding:11px 22px;" onclick="openProductModal()"><i class="fa-solid fa-plus"></i> নতুন প্রোডাক্ট যোগ করুন</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>ছবি</th><th>মন্ত্রণালয়</th><th>ফি</th><th>শেষ তারিখ</th><th>যোগ করার তারিখ</th><th>অ্যাকশন</th></tr>
+        </thead>
+        <tbody id="productsBody">
+          <tr><td colspan="6"><div class="loading-row"><i class="fa-solid fa-circle-notch"></i>লোড হচ্ছে...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div id="usersTab" style="display:none;">
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>নাম</th><th>ফোন</th><th>ইমেইল</th><th>রেজিস্ট্রেশনের তারিখ</th><th>মোট আবেদন</th><th>অ্যাকশন</th></tr>
+        </thead>
+        <tbody id="usersBody">
+          <tr><td colspan="6"><div class="loading-row"><i class="fa-solid fa-circle-notch"></i>লোড হচ্ছে...</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg"></span></div>
+
+<div class="invoice-modal" id="invoiceModal">
+  <div class="invoice-shell">
+    <div class="invoice-toolbar">
+      <button class="action-btn pdf" onclick="window.print()"><i class="fa-solid fa-print"></i> প্রিন্ট / পিডিএফ সেভ করুন</button>
+      <button class="action-btn" onclick="closeInvoice()" style="max-width:120px;"><i class="fa-solid fa-xmark"></i> বন্ধ করুন</button>
+    </div>
+
+    <div id="invoiceCard">
+      <div class="premium-watermark">MAHIN SERVICE</div>
+      <div class="inv-top">
+        <div>
+          <div class="mk"><i class="fa-solid fa-shield-halved"></i></div>
+          <div class="brand-name">মাহিন সার্ভিস</div>
+          <div class="brand-sub">By Mahin</div>
+        </div>
+        <div class="inv-meta">
+          ইনভয়েস নম্বর
+          <b id="invNumber">—</b>
+          <span id="invDate">—</span>
+        </div>
+      </div>
+      <div class="inv-body">
+        <div class="inv-stamp" id="invStamp">PENDING</div>
+
+        <div class="inv-billto">
+          <div class="blk">
+            <div class="lbl">বিল প্রাপক (আবেদনকারী)</div>
+            <b id="invName">—</b>
+            <span id="invPhone">—</span><br>
+            <span id="invEmail">—</span>
+          </div>
+          <div class="blk" style="text-align:right;">
+            <div class="lbl">অর্ডার আইডি</div>
+            <b id="invOrderCode">—</b>
+            <span id="invOrderDate">—</span>
+          </div>
+        </div>
+
+        <table class="inv-table">
+          <thead><tr><th>বিবরণ</th><th>তথ্য</th></tr></thead>
+          <tbody>
+            <tr><td>মন্ত্রণালয়ের শর্ট ফর্ম</td><td id="invMinistry">—</td></tr>
+            <tr><td>ইউজার আইডি</td><td id="invUserId">—</td></tr>
+            <tr><td>পেমেন্ট মেথড</td><td id="invMethod">—</td></tr>
+            <tr><td>প্রেরকের নম্বর</td><td id="invSender">—</td></tr>
+            <tr><td>ট্রানজেকশন আইডি</td><td id="invTrx">—</td></tr>
+            <tr><td>স্ট্যাটাস</td><td id="invStatusText">—</td></tr>
+          </tbody>
+        </table>
+
+        <div class="inv-total">
+          <div class="box">
+            <div class="row"><span>আবেদন ফি</span><span id="invFee">৳0</span></div>
+            <div class="row grand"><span>সর্বমোট</span><span id="invTotal">৳0</span></div>
+          </div>
+        </div>
+
+        <div class="inv-footer">
+          এটি মাহিন সার্ভিস কর্তৃক কম্পিউটার-জেনারেটেড একটি ইনভয়েস। মাহিন সার্ভিস কোনো সরকারি বা টেলিটক অফিশিয়াল সেবা নয় — এটি একটি ব্যক্তিগত সহায়তা সেবা।
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="cmOverlay" onclick="closeCenterModal()"></div>
+<div class="center-modal" id="centerModal">
+  <div class="center-modal-card">
+    <div class="cm-head">
+      <h3 id="cmTitle">Title</h3>
+      <button onclick="closeCenterModal()"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="cm-body" id="cmBody"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="js/firebase-init.js"></script>
+<script src="js/profile-widget.js"></script>
+<script>
+let allOrders = [];
+let allUsers = [];
+let allProducts = [];
+
+(async function boot(){
+  const user = await window.requireAdmin();
+  if(!user) return;
+  watchOrders();
+  watchUsers();
+  watchProducts();
+})();
+
+function doLogout(){
+  window.auth.signOut().then(() => location.href = 'login.html');
+}
+
+function switchTab(tab){
+  document.getElementById('tabOrdersBtn').classList.toggle('active', tab === 'orders');
+  document.getElementById('tabProductsBtn').classList.toggle('active', tab === 'products');
+  document.getElementById('tabUsersBtn').classList.toggle('active', tab === 'users');
+  document.getElementById('ordersTab').style.display = tab === 'orders' ? 'block' : 'none';
+  document.getElementById('productsTab').style.display = tab === 'products' ? 'block' : 'none';
+  document.getElementById('usersTab').style.display = tab === 'users' ? 'block' : 'none';
+}
+
+const STATUS_LABEL = {
+  pending:{cls:'pending', icon:'fa-clock', text:'মুলতুবি'},
+  approved:{cls:'approved', icon:'fa-circle-check', text:'অনুমোদিত'},
+  declined:{cls:'declined', icon:'fa-circle-xmark', text:'বাতিল'}
+};
+
+function watchOrders(){
+  window.db.collection('orders').orderBy('createdAt', 'desc').onSnapshot(snap => {
+    allOrders = [];
+    snap.forEach(doc => allOrders.push({ _id: doc.id, ...doc.data() }));
+    renderOrders();
+    renderStats();
+    renderUsers(); // refresh order-count column
+  }, err => {
+    document.getElementById('ordersBody').innerHTML = `<tr><td colspan="12"><div class="loading-row">লোড করতে সমস্যা হয়েছে: ${err.message}</div></td></tr>`;
+  });
+}
+
+function watchUsers(){
+  window.db.collection('users').orderBy('createdAt', 'desc').onSnapshot(snap => {
+    allUsers = [];
+    snap.forEach(doc => allUsers.push({ _id: doc.id, ...doc.data() }));
+    renderUsers();
+  }, err => {
+    document.getElementById('usersBody').innerHTML = `<tr><td colspan="6"><div class="loading-row">লোড করতে সমস্যা হয়েছে: ${err.message}</div></td></tr>`;
+  });
+}
+
+function renderStats(){
+  document.getElementById('statTotal').textContent = allOrders.length;
+  document.getElementById('statPending').textContent = allOrders.filter(o => o.status === 'pending').length;
+  document.getElementById('statApproved').textContent = allOrders.filter(o => o.status === 'approved').length;
+  document.getElementById('statDeclined').textContent = allOrders.filter(o => o.status === 'declined').length;
+}
+
+function renderOrders(){
+  const tbody = document.getElementById('ordersBody');
+  if(allOrders.length === 0){
+    tbody.innerHTML = `<tr><td colspan="12"><div class="loading-row"><i class="fa-regular fa-folder-open" style="animation:none;"></i>এখনো কোনো আবেদন জমা পড়েনি।</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allOrders.map(o => {
+    const s = STATUS_LABEL[o.status] || STATUS_LABEL.pending;
+    const dateText = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate().toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}) : '...';
+    return `
+    <tr>
+      <td><b>${o.orderCode || o._id}</b></td>
+      <td>${o.name || ''}</td>
+      <td>${o.phone || ''}</td>
+      <td>৳${o.fee || ''}</td>
+      <td>${o.method || ''}</td>
+      <td>${o.sender || ''}</td>
+      <td>${o.trx || ''}</td>
+      <td>${o.ministryShortForm || '—'}</td>
+      <td>${o.applicationUserId || '—'}</td>
+      <td>${dateText}</td>
+      <td><span class="badge ${s.cls}"><i class="fa-solid ${s.icon}"></i> ${s.text}</span></td>
+      <td style="white-space:nowrap;">
+        <button class="mini-btn approve" ${o.status==='approved'?'disabled':''} onclick="setStatus('${o._id}','approved')"><i class="fa-solid fa-check"></i> অনুমোদন</button>
+        <button class="mini-btn decline" ${o.status==='declined'?'disabled':''} onclick="setStatus('${o._id}','declined')"><i class="fa-solid fa-xmark"></i> বাতিল</button>
+        <button class="mini-btn view" onclick='openInvoice(${JSON.stringify(o._id)})'><i class="fa-solid fa-file-invoice"></i> ইনভয়েস</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderUsers(){
+  const tbody = document.getElementById('usersBody');
+  if(allUsers.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6"><div class="loading-row"><i class="fa-regular fa-folder-open" style="animation:none;"></i>এখনো কোনো ব্যবহারকারী রেজিস্ট্রেশন করেননি।</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allUsers.map(u => {
+    const dateText = u.createdAt && u.createdAt.toDate ? u.createdAt.toDate().toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}) : '...';
+    const orderCount = allOrders.filter(o => o.uid === u._id).length;
+    return `
+    <tr>
+      <td>${u.name || ''}</td>
+      <td>${u.phone || ''}</td>
+      <td>${u.email || ''}</td>
+      <td>${dateText}</td>
+      <td>${orderCount}</td>
+      <td style="white-space:nowrap;">
+        <button class="mini-btn view" onclick="openUserDetail('${u._id}')"><i class="fa-solid fa-eye"></i> বিস্তারিত</button>
+        <button class="mini-btn approve" onclick="openUserEdit('${u._id}')"><i class="fa-solid fa-pen"></i> সম্পাদনা</button>
+        <button class="mini-btn decline" onclick="deleteUser('${u._id}')"><i class="fa-solid fa-trash"></i> মুছুন</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function setStatus(orderId, status){
+  try{
+    await window.db.collection('orders').doc(orderId).update({ status });
+    showToast(status === 'approved' ? 'অর্ডার অনুমোদন করা হয়েছে ✓' : 'অর্ডার বাতিল করা হয়েছে');
+  }catch(err){
+    showToast('সমস্যা হয়েছে: ' + err.message);
+  }
+}
+
+// ---------- Generic centered modal ----------
+function openCenterModal(title, bodyHtml){
+  document.getElementById('cmTitle').innerHTML = title;
+  document.getElementById('cmBody').innerHTML = bodyHtml;
+  document.getElementById('cmOverlay').style.display = 'block';
+  document.getElementById('centerModal').classList.add('open');
+}
+function closeCenterModal(){
+  document.getElementById('cmOverlay').style.display = 'none';
+  document.getElementById('centerModal').classList.remove('open');
+}
+
+// ---------- Products ----------
+function watchProducts(){
+  window.db.collection('products').orderBy('createdAt', 'desc').onSnapshot(snap => {
+    allProducts = [];
+    snap.forEach(doc => allProducts.push({ _id: doc.id, ...doc.data() }));
+    renderProductsTable();
+  }, err => {
+    document.getElementById('productsBody').innerHTML = `<tr><td colspan="6"><div class="loading-row">লোড করতে সমস্যা হয়েছে: ${err.message}</div></td></tr>`;
+  });
+}
+
+function renderProductsTable(){
+  const tbody = document.getElementById('productsBody');
+  if(allProducts.length === 0){
+    tbody.innerHTML = `<tr><td colspan="6"><div class="loading-row"><i class="fa-regular fa-folder-open" style="animation:none;"></i>এখনো কোনো প্রোডাক্ট যোগ করা হয়নি।</div></td></tr>`;
+    return;
+  }
+  tbody.innerHTML = allProducts.map(p => {
+    const createdText = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleDateString('bn-BD',{dateStyle:'medium'}) : '...';
+    const lastDateText = p.lastDate || '—';
+    const thumb = p.imageUrl ? `<img class="table-thumb" src="${p.imageUrl}" onerror="this.style.display='none'">` : `<div class="table-thumb"></div>`;
+    return `
+    <tr>
+      <td>${thumb}</td>
+      <td><b>${p.ministryName || ''}</b></td>
+      <td>৳${p.price || 0}</td>
+      <td>${lastDateText}</td>
+      <td>${createdText}</td>
+      <td style="white-space:nowrap;">
+        <button class="mini-btn approve" onclick='openProductModal(${JSON.stringify(p._id)})'><i class="fa-solid fa-pen"></i> সম্পাদনা</button>
+        <button class="mini-btn decline" onclick='deleteProduct(${JSON.stringify(p._id)})'><i class="fa-solid fa-trash"></i> মুছুন</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function openProductModal(productId){
+  const p = productId ? allProducts.find(x => x._id === productId) : null;
+  const title = p ? '<i class="fa-solid fa-pen"></i> প্রোডাক্ট সম্পাদনা করুন' : '<i class="fa-solid fa-plus"></i> নতুন প্রোডাক্ট যোগ করুন';
+  const body = `
+    <div class="error-msg" id="pmError"></div>
+    <div class="field">
+      <label>ছবির লিংক (Image URL)</label>
+      <input type="text" id="pmImage" placeholder="https://..." value="${p ? (p.imageUrl||'').replace(/"/g,'&quot;') : ''}">
+      <div class="hint">কোনো ছবি হোস্টিং সাইট (imgbb, ইত্যাদি) থেকে সরাসরি ইমেজ লিংক দিন</div>
+    </div>
+    <div class="field">
+      <label>মন্ত্রণালয়ের নাম <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+      <input type="text" id="pmMinistry" placeholder="যেমনঃ স্বাস্থ্য অধিদপ্তর" value="${p ? (p.ministryName||'').replace(/"/g,'&quot;') : ''}">
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label>আবেদন ফি (৳) <i class="fa-solid fa-asterisk" style="font-size:8px;"></i></label>
+        <input type="number" id="pmPrice" min="0" value="${p ? (p.price||'') : ''}">
+      </div>
+      <div class="field">
+        <label>আবেদনের শেষ তারিখ</label>
+        <input type="date" id="pmLastDate" value="${p ? (p.lastDate||'') : ''}">
+      </div>
+    </div>
+    <button class="submit-btn" onclick="saveProduct(${p ? `'${p._id}'` : 'null'})"><i class="fa-solid fa-check"></i> সংরক্ষণ করুন</button>
+  `;
+  openCenterModal(title, body);
+}
+
+async function saveProduct(productId){
+  const errEl = document.getElementById('pmError');
+  errEl.style.display = 'none';
+
+  const imageUrl = document.getElementById('pmImage').value.trim();
+  const ministryName = document.getElementById('pmMinistry').value.trim();
+  const price = document.getElementById('pmPrice').value.trim();
+  const lastDate = document.getElementById('pmLastDate').value;
+
+  if(!ministryName || !price){
+    errEl.textContent = 'মন্ত্রণালয়ের নাম ও ফি আবশ্যক।';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  try{
+    const data = { imageUrl, ministryName, price: Number(price), lastDate };
+    if(productId){
+      await window.db.collection('products').doc(productId).update(data);
+      showToast('প্রোডাক্ট আপডেট হয়েছে ✓');
+    }else{
+      data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      await window.db.collection('products').add(data);
+      showToast('নতুন প্রোডাক্ট যোগ হয়েছে ✓');
+    }
+    closeCenterModal();
+  }catch(err){
+    errEl.textContent = 'সংরক্ষণ করতে সমস্যা হয়েছে: ' + err.message;
+    errEl.style.display = 'block';
+  }
+}
+
+async function deleteProduct(productId){
+  if(!confirm('আপনি কি নিশ্চিত এই প্রোডাক্টটি মুছে ফেলতে চান?')) return;
+  try{
+    await window.db.collection('products').doc(productId).delete();
+    showToast('প্রোডাক্ট মুছে ফেলা হয়েছে');
+  }catch(err){
+    showToast('সমস্যা হয়েছে: ' + err.message);
+  }
+}
+
+// ---------- Users: view / edit / delete ----------
+function openUserDetail(userId){
+  const u = allUsers.find(x => x._id === userId);
+  if(!u) return;
+  const orders = allOrders.filter(o => o.uid === userId);
+  const dateText = u.createdAt && u.createdAt.toDate ? u.createdAt.toDate().toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}) : '...';
+
+  const ordersHtml = orders.length
+    ? orders.map(o => {
+        const s = STATUS_LABEL[o.status] || STATUS_LABEL.pending;
+        return `<div class="mini-order-item"><span><b>${o.orderCode}</b> · ৳${o.fee}</span><span class="badge ${s.cls}"><i class="fa-solid ${s.icon}"></i> ${s.text}</span></div>`;
+      }).join('')
+    : `<div class="hint" style="margin-top:8px;">এই ব্যবহারকারীর কোনো আবেদন নেই।</div>`;
+
+  const body = `
+    <div class="detail-row"><span class="k">নাম</span><span class="v">${u.name || ''}</span></div>
+    <div class="detail-row"><span class="k">ফোন</span><span class="v">${u.phone || ''}</span></div>
+    <div class="detail-row"><span class="k">ইমেইল</span><span class="v">${u.email || ''}</span></div>
+    <div class="detail-row"><span class="k">রেজিস্ট্রেশনের তারিখ</span><span class="v">${dateText}</span></div>
+    <div class="detail-row" style="border-bottom:none;"><span class="k">মোট আবেদন</span><span class="v">${orders.length}</span></div>
+    <div style="margin-top:6px; font-size:11px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.5px;">সাম্প্রতিক আবেদনসমূহ</div>
+    ${ordersHtml}
+  `;
+  openCenterModal('<i class="fa-solid fa-id-card"></i> ব্যবহারকারীর বিস্তারিত', body);
+}
+
+function openUserEdit(userId){
+  const u = allUsers.find(x => x._id === userId);
+  if(!u) return;
+  const body = `
+    <div class="error-msg" id="ueError"></div>
+    <div class="field">
+      <label>নাম</label>
+      <input type="text" id="ueName" value="${(u.name||'').replace(/"/g,'&quot;')}">
+    </div>
+    <div class="field">
+      <label>ফোন নম্বর</label>
+      <input type="tel" id="uePhone" maxlength="11" value="${u.phone||''}">
+    </div>
+    <div class="field">
+      <label>ইমেইল</label>
+      <input type="email" value="${u.email||''}" readonly>
+    </div>
+    <button class="submit-btn" onclick="saveUserEdit('${userId}')"><i class="fa-solid fa-check"></i> সংরক্ষণ করুন</button>
+  `;
+  openCenterModal('<i class="fa-solid fa-pen"></i> ব্যবহারকারীর তথ্য সম্পাদনা', body);
+}
+
+async function saveUserEdit(userId){
+  const errEl = document.getElementById('ueError');
+  errEl.style.display = 'none';
+  const name = document.getElementById('ueName').value.trim();
+  const phone = document.getElementById('uePhone').value.trim();
+
+  if(!name || !/^01[0-9]{9}$/.test(phone)){
+    errEl.textContent = 'সঠিক নাম ও ফোন নম্বর দিন (উদাহরণঃ 01712345678)।';
+    errEl.style.display = 'block';
+    return;
+  }
+  try{
+    await window.db.collection('users').doc(userId).update({ name, phone });
+    showToast('ব্যবহারকারীর তথ্য আপডেট হয়েছে ✓');
+    closeCenterModal();
+  }catch(err){
+    errEl.textContent = 'আপডেট করতে সমস্যা হয়েছে: ' + err.message;
+    errEl.style.display = 'block';
+  }
+}
+
+async function deleteUser(userId){
+  if(!confirm('আপনি কি নিশ্চিত এই ব্যবহারকারীর প্রোফাইল মুছে ফেলতে চান?\n\nদ্রষ্টব্যঃ এটি শুধু তার প্রোফাইলের তথ্য মুছবে — তার লগইন অ্যাকাউন্ট (ইমেইল/পাসওয়ার্ড বা Google) সম্পূর্ণভাবে মুছতে Firebase Console থেকে আলাদাভাবে মুছতে হবে।')) return;
+  try{
+    await window.db.collection('users').doc(userId).delete();
+    showToast('ব্যবহারকারীর প্রোফাইল মুছে ফেলা হয়েছে');
+  }catch(err){
+    showToast('সমস্যা হয়েছে: ' + err.message);
+  }
+}
+
+// ---------- Invoice ----------
+const STATUS_TEXT_BN = { pending:'যাচাই মুলতুবি', approved:'অনুমোদিত ও পরিশোধিত', declined:'বাতিল হয়েছে' };
+
+function openInvoice(orderId){
+  const o = allOrders.find(x => x._id === orderId);
+  if(!o) return;
+
+  const dateText = o.createdAt && o.createdAt.toDate ? o.createdAt.toDate().toLocaleString('bn-BD',{dateStyle:'medium',timeStyle:'short'}) : '...';
+  const invNumber = 'INV-' + (o.orderCode || o._id.slice(0,8).toUpperCase());
+
+  document.getElementById('invNumber').textContent = invNumber;
+  document.getElementById('invDate').textContent = new Date().toLocaleDateString('bn-BD',{dateStyle:'medium'});
+  document.getElementById('invName').textContent = o.name || '';
+  document.getElementById('invPhone').textContent = o.phone || '';
+  document.getElementById('invEmail').textContent = o.email || '';
+  document.getElementById('invOrderCode').textContent = o.orderCode || o._id;
+  document.getElementById('invOrderDate').textContent = dateText;
+  document.getElementById('invMinistry').textContent = o.ministryShortForm || '—';
+  document.getElementById('invUserId').textContent = o.applicationUserId || '—';
+  document.getElementById('invMethod').textContent = o.method || '—';
+  document.getElementById('invSender').textContent = o.sender || '—';
+  document.getElementById('invTrx').textContent = o.trx || '—';
+  document.getElementById('invStatusText').textContent = STATUS_TEXT_BN[o.status] || STATUS_TEXT_BN.pending;
+  document.getElementById('invFee').textContent = '৳' + (o.fee || 0);
+  document.getElementById('invTotal').textContent = '৳' + (o.fee || 0);
+
+  const stamp = document.getElementById('invStamp');
+  const s = STATUS_LABEL[o.status] || STATUS_LABEL.pending;
+  stamp.className = 'inv-stamp ' + s.cls;
+  stamp.textContent = (o.status || 'pending').toUpperCase();
+
+  window.currentInvoiceOrder = o;
+  document.getElementById('invoiceModal').classList.add('open');
+}
+
+function closeInvoice(){
+  document.getElementById('invoiceModal').classList.remove('open');
+}
+
+// Printing uses the browser's native print dialog (see the @media print rule
+// in css/style.css) — this renders Bangla text correctly and lets the admin
+// choose "Save as PDF" as the print destination if a file is needed.
+
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2600);
+}
+</script>
+</body>
+</html>
