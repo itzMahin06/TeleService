@@ -327,6 +327,8 @@ document.getElementById('paymentForm').addEventListener('submit', async function
     orderData._id = docRef.id;
     orderData._dateText = new Date().toLocaleString('bn-BD', { dateStyle:'medium', timeStyle:'short' });
 
+    notifyTelegram(orderData);
+
     renderReceipt(orderData);
     document.getElementById('formCard').style.display = 'none';
     document.getElementById('receiptView').style.display = 'block';
@@ -341,6 +343,24 @@ document.getElementById('paymentForm').addEventListener('submit', async function
 
 function showError(msg){ const el = document.getElementById('formError'); el.textContent = msg; el.style.display='block'; }
 function hideError(){ document.getElementById('formError').style.display='none'; }
+
+// Fire-and-forget: sends order details to Telegram. Never blocks the order
+// flow — Firestore is already the source of truth, this is just a notification.
+function notifyTelegram(order){
+  fetch('/api/order-notify', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      orderCode: order.orderCode,
+      name: order.name,
+      phone: order.phone,
+      ministryShortForm: order.ministryShortForm,
+      applicationUserId: order.applicationUserId,
+      fee: order.fee,
+      method: order.method
+    })
+  }).catch(() => {});
+}
 
 // ---------- Receipt render ----------
 const STATUS_LABEL = {
