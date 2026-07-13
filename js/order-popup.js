@@ -104,6 +104,24 @@
     document.getElementById("opForm").addEventListener("submit", submitOrder);
   }
 
+  // Fire-and-forget: sends order details to Telegram. Never blocks the order
+  // flow — Firestore is already the source of truth, this is just a notification.
+  function notifyTelegramOrder(order) {
+    fetch("/api/order-notify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        orderCode: order.orderCode,
+        name: order.name,
+        phone: order.phone,
+        ministryShortForm: order.ministryShortForm,
+        applicationUserId: order.applicationUserId,
+        fee: order.fee,
+        method: order.method,
+      }),
+    }).catch(() => {});
+  }
+
   window.openOrderPopup = async function (productId) {
     injectModal();
     resetPopup();
@@ -195,6 +213,8 @@
         createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       };
       await window.db.collection("orders").add(orderData);
+
+      notifyTelegramOrder(orderData);
 
       document.getElementById("opOrderCode").textContent = orderCode;
       document.getElementById("opFormWrap").style.display = "none";
