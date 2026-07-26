@@ -531,6 +531,21 @@ function closeDrawer(){
   document.getElementById('overlay').style.display = 'none';
   document.getElementById('drawer').classList.remove('open');
 }
+  // ---------- Header menu (profile + logout) ----------
+function toggleHeaderMenu(e){
+  e.stopPropagation();
+  document.getElementById('headerMenuDropdown').classList.toggle('open');
+}
+function closeHeaderMenu(){
+  document.getElementById('headerMenuDropdown').classList.remove('open');
+}
+document.addEventListener('click', function(e){
+  const dd = document.getElementById('headerMenuDropdown');
+  if(dd && dd.classList.contains('open') && !e.target.closest('.menu-wrap')){
+    dd.classList.remove('open');
+  }
+});
+
 </script>
 </body>
 </html>
