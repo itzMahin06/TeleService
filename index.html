@@ -59,7 +59,62 @@
     </div>
   </div>
 </section>
+<!--
+  PASTE THIS into index.html, right after the hero </section> ends
+  and BEFORE <section class="steps"> begins.
+-->
+<section class="concept-banner">
+  <div class="concept-inner">
+    <div class="concept-text">
+      <h2>একটি আবেদন, তিনটি ধাপ, সম্পূর্ণ নিশ্চিন্ত</h2>
+      <p>আপনার আবেদনপত্র থেকে পেমেন্ট, যাচাই থেকে অনুমোদন — পুরো প্রক্রিয়াটা আমরা এক জায়গায় সহজ করে দিয়েছি।</p>
+    </div>
 
+    <svg class="concept-illustration" viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="আবেদন থেকে অনুমোদন পর্যন্ত প্রক্রিয়ার চিত্র">
+      <!-- soft background blobs -->
+      <circle cx="70" cy="40" r="70" fill="var(--brand)" opacity="0.06"/>
+      <circle cx="580" cy="190" r="90" fill="var(--gold)" opacity="0.08"/>
+
+      <!-- connector line -->
+      <path d="M120,110 C220,60 260,160 320,110 C380,60 420,160 520,110" stroke="var(--line)" stroke-width="3" stroke-dasharray="7 8" fill="none"/>
+
+      <!-- Step 1: Application document -->
+      <g transform="translate(60,55)">
+        <rect x="0" y="0" width="100" height="120" rx="12" fill="#fff" stroke="var(--brand)" stroke-width="2.5"/>
+        <rect x="16" y="20" width="68" height="8" rx="4" fill="var(--brand)" opacity="0.85"/>
+        <rect x="16" y="38" width="68" height="6" rx="3" fill="var(--line)"/>
+        <rect x="16" y="52" width="68" height="6" rx="3" fill="var(--line)"/>
+        <rect x="16" y="66" width="46" height="6" rx="3" fill="var(--line)"/>
+        <circle cx="66" cy="94" r="16" fill="var(--gold)"/>
+        <path d="M59,94 l5,5 l10,-11" stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="0" cy="0" r="16" fill="var(--brand-deep)"/>
+        <text x="0" y="5" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" font-family="inherit">১</text>
+      </g>
+
+      <!-- Step 2: Payment phone -->
+      <g transform="translate(270,40)">
+        <rect x="0" y="0" width="90" height="140" rx="16" fill="var(--brand-dark)"/>
+        <rect x="8" y="14" width="74" height="104" rx="6" fill="#fff"/>
+        <rect x="18" y="26" width="54" height="10" rx="5" fill="var(--brand)" opacity="0.9"/>
+        <circle cx="45" cy="66" r="20" fill="var(--brand)" opacity="0.12"/>
+        <text x="45" y="73" text-anchor="middle" font-size="22" font-weight="700" fill="var(--brand-deep)" font-family="inherit">৳</text>
+        <rect x="18" y="96" width="54" height="8" rx="4" fill="var(--line)"/>
+        <circle cx="45" cy="129" r="4" fill="#fff" opacity="0.7"/>
+        <circle cx="0" cy="0" r="16" fill="var(--brand-deep)"/>
+        <text x="0" y="5" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" font-family="inherit">২</text>
+      </g>
+
+      <!-- Step 3: Approved badge -->
+      <g transform="translate(500,55)">
+        <circle cx="50" cy="55" r="58" fill="#fff" stroke="var(--green)" stroke-width="2.5"/>
+        <circle cx="50" cy="55" r="30" fill="var(--green)" opacity="0.12"/>
+        <path d="M35,55 l11,11 l22,-24" stroke="var(--green)" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="0" cy="0" r="16" fill="var(--brand-deep)"/>
+        <text x="0" y="5" text-anchor="middle" font-size="14" font-weight="700" fill="#fff" font-family="inherit">৩</text>
+      </g>
+    </svg>
+  </div>
+</section>
 <section class="steps">
   <div class="step"><div class="num">০১</div><div><h3>মন্ত্রণালয় ও ইউজার আইডি দিন</h3><p>আপনার নাম ও ফোন নম্বর প্রোফাইল থেকে স্বয়ংক্রিয়ভাবে যুক্ত হবে।</p></div></div>
   <div class="step"><div class="num">০২</div><div><h3>টাকা পাঠান</h3><p>01931923910 নম্বরে Send Money করুন — বিকাশ, নগদ বা রকেটে।</p></div></div>
