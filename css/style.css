@@ -59,22 +59,44 @@ header.site{
 }
 .brand{display:flex; align-items:center; gap:9px;}
 .brand-mark{
-  width:32px; height:32px; border-radius:9px;
-  background:linear-gradient(160deg,var(--brand),var(--brand-deep));
-  display:flex; align-items:center; justify-content:center;
+  width:32px; height:32px; border-radius:50%;
+  background-color:#fff;
+  background-image:url('https://teleservicebymahin.vercel.app/mahin-service-banner.png');
+  background-repeat:no-repeat;
+  background-size:165px 110px;
+  background-position:-5px -4px;
   box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3), 0 4px 10px -4px rgba(0,0,0,.4);
-  flex-shrink:0; color:#fff; font-size:14px;
+  flex-shrink:0;
 }
+
+/* ===== Header menu dropdown (profile + logout) ===== */
+.menu-wrap{position:relative;}
+.menu-dropdown{
+  position:absolute; top:calc(100% + 10px); right:0; min-width:190px;
+  background:#fff; border:1px solid var(--line); border-radius:12px;
+  box-shadow:0 16px 32px -12px rgba(22,40,28,.35);
+  padding:8px; display:none; flex-direction:column; gap:2px; z-index:55;
+}
+.menu-dropdown.open{display:flex; animation:fadeUp .18s ease both;}
+.menu-item{
+  display:flex; align-items:center; gap:10px; width:100%; text-align:left;
+  padding:10px 12px; border-radius:8px; border:none; background:none;
+  font-size:12.5px; font-weight:700; color:var(--ink); cursor:pointer;
+}
+.menu-item i{width:16px; text-align:center; color:var(--brand-deep);}
+.menu-item:hover{background:#f3f6f3;}
+.menu-item.danger{color:#b3261e;}
+.menu-item.danger i{color:#b3261e;}
+.menu-item.danger:hover{background:#fdecea;}
 .brand-text .name{font-size:14.5px; font-weight:700; letter-spacing:.2px; line-height:1.2;}
 .brand-text .slogan{font-size:8.6px; color:#d8f3de; letter-spacing:1.8px; text-transform:uppercase;}
 .header-actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap;}
-.btn-pill{ 
+.btn-pill{
   display:flex; align-items:center; gap:7px;
   background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
   color:#fff; padding:7px 13px; border-radius:999px; font-size:11.5px; transition:.2s;
-text-decoration:none;
 }
-.btn-pill:hover{text-decoration:none; :rgba(255,255,255,.24); transform:translateY(-1px);}
+.btn-pill:hover{background:rgba(255,255,255,.24); transform:translateY(-1px);}
 .btn-pill:active{transform:scale(.96);}
 .btn-pill .count{
   background:#fff; color:var(--brand-deep); font-family:var(--mono); font-weight:700; font-size:9.5px;
@@ -181,8 +203,8 @@ input[type=file]{display:none;}
 .profile-chip .who b{font-size:12.5px; display:block;}
 .profile-chip .who span{font-size:10px; color:var(--ink-soft);}
 
-.submit-btn{text-decoration:none; width:100%; margin-top:2px; padding:12px; border:none; border-radius:11px; background:linear-gradient(135deg,var(--brand),var(--brand-deep)); color:#fff; font-size:13.5px; font-weight:700; letter-spacing:.2px; box-shadow:0 8px 18px -10px rgba(22,60,34,.4); display:flex; align-items:center; justify-content:center; gap:9px; transition:.18s;}
-.submit-btn:hover{text-decoration:none; transform:translateY(-1px); box-shadow:0 10px 22px -10px rgba(22,60,34,.45);}
+.submit-btn{width:100%; margin-top:2px; padding:12px; border:none; border-radius:11px; background:linear-gradient(135deg,var(--brand),var(--brand-deep)); color:#fff; font-size:13.5px; font-weight:700; letter-spacing:.2px; box-shadow:0 8px 18px -10px rgba(22,60,34,.4); display:flex; align-items:center; justify-content:center; gap:9px; transition:.18s;}
+.submit-btn:hover{transform:translateY(-1px); box-shadow:0 10px 22px -10px rgba(22,60,34,.45);}
 .submit-btn:active{transform:translateY(1px) scale(.99);}
 .submit-btn:disabled{opacity:.6; cursor:not-allowed; transform:none;}
 .submit-btn i.fa-spin{animation:spin .8s linear infinite;}
@@ -486,13 +508,7 @@ tbody tr:last-child td{border-bottom:none;}
   .pay-methods{grid-template-columns:1fr 1fr 1fr;}
   .stat-row{grid-template-columns:1fr 1fr;}
   .inv-stamp{top:90px; right:20px;}
-}
-
-/*
-  PASTE THIS into css/style.css — anywhere is fine, e.g. right after the
-  .steps rules. Styles the new .concept-banner section (concept-section.html).
-*/
-
+      }
 .concept-banner{
   max-width:1180px; margin:34px auto 0; padding:0 22px;
 }
